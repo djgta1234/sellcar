@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยอดขายรถทั้งหมด</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                        ยอดขายรถทั้งหมด
+                    </h1>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- ยอดขายรถทั้งหมด -->
+                        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-blue-500">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">รถที่ขายได้ทั้งหมด</p>
+                                    <p id="total-cars-sold" class="text-2xl font-bold text-gray-800">0 คัน</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- ค่าคอมทั้งหมด -->
+                        <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-purple-500">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-purple-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">ค่าคอมทั้งหมด</p>
+                                    <p id="total-commission" class="text-2xl font-bold text-gray-800">0 บาท</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <!-- Home Button -->
+                    <a href="index.html" class="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Home</span>
+                    </a>
+                    
+                    <!-- Refresh Button -->
+                    <button id="refresh-btn" class="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search and Filter Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search products...">
+                </div>
+                <button id="search-btn" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium rounded-lg hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                    Search
+                </button>
+            </div>
+            
+            <div class="mt-4 flex flex-wrap gap-2">
+                <span class="text-sm text-gray-600">Quick filters:</span>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="all">All</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="0">Timestamp</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="1">ชื่อรถ</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="2">ชื่อลูกค้า</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="3">ราคารถ</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="4">เบอร์ลูกค้า</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="5">ค่าคอม</button>
+                <button class="filter-chip px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors" data-column="6">วันที่</button>
+
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+            <p class="text-gray-600">Loading data from Google Sheets...</p>
+        </div>
+
+        <!-- Data Table Section -->
+        <div id="table-container" class="hidden bg-white rounded-xl shadow-md overflow-hidden fade-in">
+            <div class="overflow-x-auto">
+                <table id="data-table" class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr id="table-header" class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <!-- Headers will be populated by JavaScript -->
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Showing <span id="showing-from">1</span> to <span id="showing-to">10</span> of <span id="total-items">0</span> items
+                </div>
+                <div class="flex space-x-2">
+                    <button id="prev-page" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Previous
+                    </button>
+                    <button id="next-page" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden bg-white rounded-xl shadow-md p-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-2 text-lg font-medium text-gray-900">ไม่พบข้อมูลที่ท่านต้องการ</h3>
+            <p class="mt-1 text-gray-500">เช็คว่าทุกอย่างถูกต้องแล้วโปรดลองใหม่อีกครั้ง.</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden bg-red-50 rounded-xl shadow-md p-6 text-center">
+            <div class="flex flex-col items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-3 text-lg font-medium text-red-800" id="error-title">Error loading data</h3>
+                <p class="mt-2 text-sm text-red-600" id="error-message">There was a problem fetching data from Google Sheets.</p>
+                <button id="retry-btn" class="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_KEY = 'AIzaSyAVflLdKxSI48C6jYVkbWO37GTx8fthINI';
+        const SPREADSHEET_ID = '1I-DON9rppO3OSUtOckP5XTP12bCWbWT_8itoBNaoSkM';
+        const SHEET_NAME = 'Sell';
+        const RANGE = 'A:Z';
+        const ITEMS_PER_PAGE = 10;
+
+        // State management
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let currentSearchTerm = '';
+        let currentFilterColumn = 'all';
+
+        // DOM Elements
+        const elements = {
+            loading: document.getElementById('loading-state'),
+            tableContainer: document.getElementById('table-container'),
+            tableHeader: document.getElementById('table-header'),
+            tableBody: document.getElementById('table-body'),
+            emptyState: document.getElementById('empty-state'),
+            errorState: document.getElementById('error-state'),
+            errorTitle: document.getElementById('error-title'),
+            errorMessage: document.getElementById('error-message'),
+            searchInput: document.getElementById('search-input'),
+            searchBtn: document.getElementById('search-btn'),
+            refreshBtn: document.getElementById('refresh-btn'),
+            retryBtn: document.getElementById('retry-btn'),
+            prevPage: document.getElementById('prev-page'),
+            nextPage: document.getElementById('next-page'),
+            showingFrom: document.getElementById('showing-from'),
+            showingTo: document.getElementById('showing-to'),
+            totalItems: document.getElementById('total-items'),
+            filterChips: document.querySelectorAll('.filter-chip'),
+            totalCarsSold: document.getElementById('total-cars-sold'),
+            totalCommission: document.getElementById('total-commission')
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setupEventListeners();
+        });
+
+        // Helper Functions
+        function parseNumberWithCommas(numStr) {
+            if (!numStr) return 0;
+            const cleaned = numStr.toString().replace(/[^\d.-]/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+
+        function isEmptyRow(row) {
+            return !row || row.every(cell => {
+                const value = cell ? cell.toString().trim() : '';
+                return value === '';
+            });
+        }
+
+        function filterValidRows(rows) {
+            return rows.filter(row => !isEmptyRow(row));
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            elements.searchBtn.addEventListener('click', performSearch);
+            elements.searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            elements.refreshBtn.addEventListener('click', fetchData);
+            elements.retryBtn.addEventListener('click', fetchData);
+            elements.prevPage.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+            elements.nextPage.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+            
+            elements.filterChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    currentFilterColumn = chip.dataset.column;
+                    updateActiveFilterChip();
+                    performSearch();
+                });
+            });
+        }
+
+        function updateActiveFilterChip() {
+            elements.filterChips.forEach(chip => {
+                if (chip.dataset.column === currentFilterColumn) {
+                    chip.classList.remove('bg-gray-100', 'text-gray-800');
+                    chip.classList.add('bg-purple-100', 'text-purple-800');
+                } else {
+                    chip.classList.remove('bg-purple-100', 'text-purple-800');
+                    chip.classList.add('bg-gray-100', 'text-gray-800');
+                }
+            });
+        }
+
+        // Fetch data from Google Sheets
+        async function fetchData() {
+            try {
+                showLoading();
+                hideError();
+                hideTable();
+                hideEmptyState();
+
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!${RANGE}?key=${API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.values && data.values.length > 0) {
+                    const headers = data.values[0];
+                    const rows = filterValidRows(data.values.slice(1));
+                    
+                    allData = {
+                        headers: headers,
+                        rows: rows
+                    };
+                    
+                    updateSalesSummary(allData);
+                    performSearch();
+                } else {
+                    showEmptyState();
+                    updateSalesSummary({ rows: [] });
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError('Connection Error', 'Failed to fetch data from Google Sheets. Please check your connection and try again.');
+            }
+        }
+
+        function updateSalesSummary(data) {
+            if (!data || !data.rows) {
+                elements.totalCarsSold.textContent = '0 คัน';
+                elements.totalCommission.textContent = '0 บาท';
+                return;
+            }
+            
+            const validRows = filterValidRows(data.rows);
+            const totalCars = validRows.length;
+            const totalCommission = validRows.reduce((sum, row) => {
+                return sum + parseNumberWithCommas(row[5] || 0);
+            }, 0);
+            
+            elements.totalCarsSold.textContent = `${totalCars.toLocaleString()} คัน`;
+            elements.totalCommission.textContent = `${totalCommission.toLocaleString()} บาท`;
+        }
+
+        function performSearch() {
+            currentSearchTerm = elements.searchInput.value.trim().toLowerCase();
+            currentPage = 1;
+            
+            if (!allData.rows) return;
+
+            const validRows = filterValidRows(allData.rows);
+            
+            if (currentSearchTerm === '' && currentFilterColumn === 'all') {
+                filteredData = validRows;
+            } else {
+                filteredData = validRows.filter(row => {
+                    if (currentFilterColumn === 'all') {
+                        return row.some(cell => 
+                            cell && cell.toString().toLowerCase().includes(currentSearchTerm)
+                        );
+                    } else {
+                        const colIndex = parseInt(currentFilterColumn);
+                        return row[colIndex] && 
+                               row[colIndex].toString().toLowerCase().includes(currentSearchTerm);
+                    }
+                });
+            }
+
+            if (filteredData.length > 0) {
+                renderTable();
+            } else {
+                showEmptyState();
+            }
+        }
+
+        function renderTable() {
+            if (!allData.headers || !filteredData) return;
+
+            elements.tableHeader.innerHTML = '';
+            elements.tableBody.innerHTML = '';
+
+            // Create headers
+            allData.headers.forEach(header => {
+                const th = document.createElement('th');
+                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                th.textContent = header;
+                elements.tableHeader.appendChild(th);
+            });
+
+            // Pagination
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredData.length);
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            // Create rows
+            paginatedData.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                tr.className = rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+
+                row.forEach((cell, cellIndex) => {
+                    const td = document.createElement('td');
+                    td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    
+                    if (currentSearchTerm && 
+                        (currentFilterColumn === 'all' || cellIndex === parseInt(currentFilterColumn)) &&
+                        cell && cell.toString().toLowerCase().includes(currentSearchTerm)) {
+                        const highlighted = cell.toString().replace(
+                            new RegExp(currentSearchTerm, 'gi'),
+                            match => `<span class="bg-yellow-200">${match}</span>`
+                        );
+                        td.innerHTML = highlighted;
+                    } else {
+                        td.textContent = cell || '';
+                    }
+                    
+                    tr.appendChild(td);
+                });
+
+                elements.tableBody.appendChild(tr);
+            });
+
+            // Update pagination info
+            elements.showingFrom.textContent = startIndex + 1;
+            elements.showingTo.textContent = endIndex;
+            elements.totalItems.textContent = filteredData.length;
+
+            elements.prevPage.disabled = currentPage === 1;
+            elements.nextPage.disabled = endIndex >= filteredData.length;
+
+            showTable();
+        }
+
+        // UI State Management
+        function showLoading() {
+            elements.loading.classList.remove('hidden');
+            hideTable();
+            hideEmptyState();
+            hideError();
+        }
+
+        function showTable() {
+            elements.loading.classList.add('hidden');
+            elements.tableContainer.classList.remove('hidden');
+            elements.emptyState.classList.add('hidden');
+            elements.errorState.classList.add('hidden');
+        }
+
+        function hideTable() {
+            elements.tableContainer.classList.add('hidden');
+        }
+
+        function showEmptyState() {
+            elements.loading.classList.add('hidden');
+            elements.tableContainer.classList.add('hidden');
+            elements.emptyState.classList.remove('hidden');
+            elements.errorState.classList.add('hidden');
+        }
+
+        function hideEmptyState() {
+            elements.emptyState.classList.add('hidden');
+        }
+
+        function showError(title, message) {
+            elements.loading.classList.add('hidden');
+            elements.tableContainer.classList.add('hidden');
+            elements.emptyState.classList.add('hidden');
+            
+            elements.errorTitle.textContent = title;
+            elements.errorMessage.textContent = message;
+            elements.errorState.classList.remove('hidden');
+        }
+
+        function hideError() {
+            elements.errorState.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
